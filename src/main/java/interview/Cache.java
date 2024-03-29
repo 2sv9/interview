@@ -1,16 +1,13 @@
 package interview;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.LinkedHashMap;
 import java.util.function.Function;
 
 public class Cache
 {
   private final Function<String, Player> playerFetcher;
 
-  final HashMap<String, Player> storage = new HashMap<>();
-
-  final LinkedList<String> order = new LinkedList<>();
+  private final LinkedHashMap<String, Player> storage = new LinkedHashMap<>(256, 0.75f,  /* accessOrder */ true);
 
   private static final int MAX_PLAYERS = 2;
 
@@ -31,20 +28,16 @@ public class Cache
   }
 
   private Player getPlayer(final String key) {
-    order.remove(key);
-    order.addFirst(key);
     return storage.get(key);
   }
 
   private void storePlayer(final String key, final Player player) {
 
     if (storage.size() >= MAX_PLAYERS) {
-      String keyToEvict = order.getLast();
-      order.remove(keyToEvict);
-      storage.remove(keyToEvict);
+      String firstPlayer = storage.keySet().iterator().next();
+      storage.remove(firstPlayer);
     }
 
     storage.put(key, player);
-    order.addFirst(key);
   }
 }
